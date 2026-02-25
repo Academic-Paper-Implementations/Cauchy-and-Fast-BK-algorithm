@@ -1,10 +1,10 @@
 # I/O Paths
-dataset_path=data/gau_mountain.csv
+dataset_path=D:\Desktop\Doan\Fast-BK-algorithm\data\Shanghai_POI_sample_035_checkin_exp_dis.csv
 output_path=results/colocation_rules.txt
 
 # Algorithm Thresholds
-neighbor_distance=4500
-min_prevalence=0.3
+neighbor_distance=250
+min_prevalence=0.2
 min_cond_prob=0.5
 
 # Debug
