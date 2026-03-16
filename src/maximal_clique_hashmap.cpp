@@ -257,6 +257,7 @@ namespace {
     struct StructureInfo {
         int s; // Kernel size (kết nối với tất cả)
         int k; // Shell size
+		int div; // Divergence (max degree trong K - s), dùng để đánh giá mức độ đặc của P
     };
 
     StructureInfo analyzeStructure(const CliqueVec& P, const AdjMap& adj) {
@@ -265,6 +266,7 @@ namespace {
 
         int s = 0;
         int k = 0;
+        int max_deg_K = 0;
 
         for (Node u : P) {
             // Tính bậc trong P
@@ -280,9 +282,21 @@ namespace {
             }
             else {
                 k++;
+                // Cập nhật đỉnh có bậc cao nhất trong tập K
+                if (deg_in_P > max_deg_K) {
+                    max_deg_K = deg_in_P;
+                }
             }
         }
-        return { s, k };
+        // Tính toán độ phân kỳ (Divergence) sau khi đã biết s
+        int div = 0;
+        if (k > 0) {
+            // Áp dụng công thức: div(G) = max(d(v)) - s
+            div = max_deg_K - s;
+            // Đảm bảo an toàn, phòng trường hợp bất thường div bị âm
+            if (div < 0) div = 0;
+        }
+        return { s, k, div };
     }
 
     // --- DEGENERACY ORDERING ---
@@ -408,7 +422,17 @@ std::map<Colocation, std::unordered_map<FeatureType, std::set<const SpatialInsta
         // Điều kiện chọn thuật toán (từ paper: s >= 2.8k - 11)
         // RCD tốt cho vùng đặc (s lớn, k nhỏ)
         // Pivot tốt cho vùng thưa
-        double threshold = 2.8 * info.k - 11.0;
+        double threshold = 0;
+        if (info.div == 0) {
+            threshold = 2.8 * info.k - 4.5;
+        }
+        else if (info.div == 1) {
+            threshold = 2.8 * info.k - 8.0;
+        }
+        else {
+            // Gộp chung trường hợp div == 2 và div >= 3
+            threshold = 2.8 * info.k - 11.0;
+        }
 
         // R khởi tạo chứa {v}
         CliqueVec R_init = { v };

@@ -29,7 +29,7 @@ int main(int argc, char* argv[]) {
     std::string config_path = (argc > 1) ? argv[1] : "./config/config.txt";
     AppConfig config = ConfigLoader::load(config_path);
 
-    auto instances = DataLoader::load_csv(config.datasetPath);
+    auto instances = DataLoader::load_csv(config.datasetPath, config.percentageData);
 
     // --- Step 2: Pre-processing (Indexing & Structures) ---
     // 1. Feature Counting & Sorting
@@ -85,6 +85,7 @@ int main(int argc, char* argv[]) {
     outFile << "Total Instances:   " << instances.size() << "\n";
     outFile << "Neighbor Distance: " << config.neighborDistance << "\n";
     outFile << "Min Prevalence:    " << config.minPrev << "\n";
+    outFile << "Percentage Data:    " << (config.percentageData * 100) << "%\n";
     outFile << "----------------------------------------\n";
 
 	// (B) Execution Time
