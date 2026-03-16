@@ -10,6 +10,7 @@
 #include <map>
 #include <unordered_map>
 #include <algorithm>
+#include <iostream>
 
 
 // Main mining algorithm: find all prevalent colocation patterns
@@ -138,10 +139,11 @@ double Miner::computeWeightedPI(
 		}
 
 		// Calculate W_log = 1 / RI
-		double w_log = 0.0;
-		if (ri > 1e-9) {
-			w_log = 1.0 / ri;
+		if (ri < 1e-9) {
+			std::cout<<"Warning!!";
+			ri = 1e-9;
 		}
+		double w_log = 1.0 / ri;
 
 		// WPR = PR * W_log
 		double wpr = pr * w_log;
